@@ -8,7 +8,7 @@ from data_utils import ModisFeatureExtractor
 # the Histogram Extractor was never finished 
 #from data_utils import ModisHistogramExtractor
 from IPython.display import display
-
+import cv2
 # In[2]:
 
 

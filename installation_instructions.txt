@@ -13,3 +13,7 @@ for me) and GDAL. I had to install gdal with homebrew. Additionally
 I had some issues with the google API certs (security) packages until I 
 upgraded to 3.7 (if I recall correctly it was the urlib or urlib2 library
 causing issues). 
+
+PLEASE NOTE:
+That Jaspreet has all of her files in /acled_visualization/HMM_FAM/. Amber attempted to integrate 
+ the two set-up, but if there are issues see Jaspreet's original files. 

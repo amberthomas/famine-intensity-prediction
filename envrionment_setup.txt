@@ -7,4 +7,8 @@ Please download "afg_full_time" folder from the shared "CS325b supplementary mat
 https://drive.google.com/drive/folders/1cOGmaMXekinLLKcqnjWRPCB0EQOM5S2P?usp=sharing
 
 Place this folder (afg_full_time) in the modis_data folder, such that the
-repo file tree looks like famine-intensity-prediction > modis_data > afg_full_time
+repo file tree looks like famine-intensity-prediction(root of repo) > modis_data > afg_full_time
+
+PLEASE NOTE:
+That Jaspreet has all of her files in /acled_visualization/HMM_FAM/. Amber attempted to integrate 
+ the two set-up, but if there are issues see Jaspreet's original files. 

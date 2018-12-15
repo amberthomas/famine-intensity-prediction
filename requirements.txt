@@ -1,2 +1,9 @@
 I believe that all requirements to run are covered by the amber setup.txt for the modis model. 
+hopefully I have the correct pip version of cv2
+
 Jaspreet, I believe has her own set of requirements, such as pomegranate.
+Otherwise the only req's are python 3, GDAL and GEE.
+
+PLEASE NOTE:
+That Jaspreet has all of her files in /acled_visualization/HMM_FAM/. Amber attempted to integrate 
+ the two set-up, but if there are issues see Jaspreet's original files. 

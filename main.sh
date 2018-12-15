@@ -47,9 +47,9 @@ then
     then 
         echo "Great! Getting started..."
         python acled_visualization/HMM_FAM/Ensemble.py
-        python acled_visualization/Anommultivariatehmm.py
-        python acled_visualization/Maxmultivariate.py
-        python acled_visualization/Transition\ multivariate.py
+        python acled_visualization/HMM_FAM/Anommultivariatehmm.py
+        python acled_visualization/HMM_FAM/maxmutivariate.py
+        python acled_visualization/HMM_FAM/Transition\ multivariate.py
     else
         echo "You skipped Jaspreet's portion!"
     fi

@@ -14,7 +14,7 @@ from collections import Counter
 # In[4]:
 
 
-frame = pd.read_csv('jaspreet_afghanistan.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_afghanistan.csv')
 
 print("This represents the ensemble model for just the IPC scores")
 print("Prints out final accuracy of the model")
@@ -26,7 +26,7 @@ afg3 = (frame.jaspreet_2015)
 afg4 = (frame.jaspreet_2016)
 afg5 = (frame.jaspreet_2017)
 
-frame = pd.read_csv('jaspreet_somalia.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_somalia.csv')
 
 yeardata_afg = np.vstack((afg1,afg2,afg3,afg4))
 print(yeardata_afg.shape)
@@ -55,7 +55,7 @@ yeardata1_som = np.vstack((som5,som7,som11,som13,som15))
 yeardata_som = yeardata_som.T - 1
 yeardata1_som = yeardata1_som.T - 1
 
-frame = pd.read_csv('jaspreet_southsudan.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_southsudan.csv')
 
 print(len(frame.country))
 #print(len(frame.country))
@@ -81,7 +81,7 @@ yeardata_ss = np.vstack((year7,year9,year11,year13))
 yeardata_ss = yeardata_ss.T - 1
 yeardata1_ss = yeardata1_ss.T - 1
 
-frame = pd.read_csv('jaspreet_mali.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_mali.csv')
 
 print(len(frame.Country))
 year0 = (frame.jaspreet_2013)
@@ -102,7 +102,7 @@ yeardata1_mali = np.vstack((year0,year1,year2,year4,year6))
 yeardata_mali = yeardata_mali.T - 1
 yeardata1_mali = yeardata1_mali.T - 1
 
-frame = pd.read_csv('jaspreet_niger.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_niger.csv')
 
 year1 = (frame.jaspreet_2014)
 year2 = (frame.jaspreet_2015)

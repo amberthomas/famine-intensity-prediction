@@ -9,7 +9,7 @@ then
     pip install sklearn
     pip install pydot
     pip install seaborn
-    pip install pyglet
+    pip install opencv-python
     
     # I added Jaspreet's packages 
     pip install pomegranate

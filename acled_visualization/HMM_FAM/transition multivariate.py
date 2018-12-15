@@ -19,7 +19,7 @@ print("This function detects transitions in IPC scores from 2 to 3 and 3 to 4. V
 ##########################################################################
 ###Afghanistan section######################################
 
-frame = pd.read_csv('jaspreet_afghanistan.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_afghanistan.csv')
 
 #print(len(frame.Country))
 
@@ -63,7 +63,7 @@ anomdata_afg = anomdata_afg.T
 anomdata1_afg = anomdata1_afg.T 
 
 ###########Somalia########################################################
-frame = pd.read_csv('jaspreet_somalia.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_somalia.csv')
 
 som5 = (frame.jaspreet_2013)
 
@@ -114,7 +114,7 @@ anomdata1_som = anomdata1_som.T
 
 
 #################southSudan##################################################
-frame = pd.read_csv('jaspreet_southsudan.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_southsudan.csv')
 
 
 year0 = [1]*len(frame.country)
@@ -176,7 +176,7 @@ yeardata1_ss = yeardata1_ss.T - 1
 
 
 ##################mali########################################################
-frame = pd.read_csv('jaspreet_mali.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_mali.csv')
 
 #print(len(frame.Country))
 year0 = (frame.jaspreet_2013)
@@ -224,7 +224,7 @@ yeardata1_mali = yeardata1_mali.T - 1
 
 #################################Niger########################################
 
-frame = pd.read_csv('jaspreet_niger.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_niger.csv')
 
 #print(len(frame.Country))
 year0 = [1]*len(frame.Country)

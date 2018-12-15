@@ -22,7 +22,7 @@ model = HiddenMarkovModel()
 
 print("This file contains the HMM models that include avg NDVI and NDVI anomaly data. ")
 
-frame = pd.read_csv('jaspreet_afghanistan.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_afghanistan.csv')
 print(len(frame.Country))
 
 
@@ -151,7 +151,7 @@ print(class4/32)
 # In[29]:
 
 
-frame = pd.read_csv('jaspreet_somalia.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_somalia.csv')
 print(len(frame.Country))
 
 year3 = (frame.jaspreet_2012)
@@ -334,7 +334,7 @@ print(class4/56)
 # In[30]:
 
 
-frame = pd.read_csv('jaspreet_mali.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_mali.csv')
 print("length is")
 print(len(frame.Country))
 year0 = (frame.jaspreet_2013)
@@ -489,7 +489,7 @@ print(class4/49)
 # In[39]:
 
 
-frame = pd.read_csv('jaspreet_southsudan.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_southsudan.csv')
 
 print(len(frame.country))
 
@@ -655,7 +655,7 @@ print(class4/74)
 # In[5]:
 
 
-frame = pd.read_csv('jaspreet_niger.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_niger.csv')
 
 print(len(frame.Country))
 
@@ -802,7 +802,7 @@ print(class4/48)
 # In[6]:
 
 
-frame = pd.read_csv('jaspreet_mali.csv')
+frame = pd.read_csv('acled_visualization/HMM_FAM/jaspreet_mali.csv')
 print("length is")
 print(len(frame.Country))
 year0 = (frame.jaspreet_2013)

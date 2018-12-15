@@ -9,6 +9,7 @@ from scipy.interpolate import spline
 import numpy as np
 import seaborn as sns
 import copy
+from IPython.display import display
 
 #index by time stamp, needed to resample the data into month long chunks, only for data from website
 def index_by_event_date(acled_frame):
@@ -21,18 +22,19 @@ def index_by_event_date(acled_frame):
     
 def plot_fatalities_by_events(acled_frame, country):
     event_grps = acled_frame[acled_frame['fatalities'] > 0].groupby('event_type')
-    plt.figure(figsize=(20,20))
-    plt.rcParams.update({'font.size': 22})
+    #plt.figure(figsize=(6,5))
+    plt.rcParams.update({'font.size': 12})
     plt.xticks(rotation=70)
     title_str = 'Fatalities by Event Type in ' + country
     plt.title(title_str, fontweight ='bold')
     for name, data in event_grps:
         plt.plot(data.fatalities.resample('M').sum(), '-', label = name, linewidth='4')
-        leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+        plt.legend()
+        """leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
           fancybox=True, shadow=True, ncol=3)
     for line in leg.get_lines():
-        line.set_linewidth(8.0)
-        
+        line.set_linewidth(8.0)"""
+    plt.show()   
         
         
 def event_counts(acled_frame, title_str, group_name = '', min_fatalities = 0):
@@ -41,25 +43,26 @@ def event_counts(acled_frame, title_str, group_name = '', min_fatalities = 0):
         event_grps = event_frame.groupby('country')
     else:
         event_grps = event_frame.groupby(group_name)
-    plt.figure(figsize=(20,20))
-    plt.rcParams.update({'font.size': 22})
+    #plt.figure(figsize=(6,5))
+    plt.rcParams.update({'font.size': 12})
     plt.xticks(rotation=70)
     plt.title(title_str, fontweight ='bold')
     for name, data in event_grps:
         if group_name == '':
             name = 'Events'
         plt.plot(data.year.resample('M').count(), '-', label = name, linewidth='4')
-    leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+    plt.legend()
+    """leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
             fancybox=True, shadow=True, ncol=3)
     for line in leg.get_lines():
-        line.set_linewidth(8.0)
-        
+        line.set_linewidth(8.0)"""
+    plt.show()   
         
 def actor_type(acled_frame, country):
     inter1_grps = acled_frame.groupby('inter1')
     inter2_grps = acled_frame.groupby('inter2')
-    plt.figure(figsize=(20,20))
-    plt.rcParams.update({'font.size': 22})
+    #plt.figure(figsize=(6,5))
+    plt.rcParams.update({'font.size': 12})
     plt.xticks(rotation=70)
     plt.title('Actor Type in Event: ' + country, fontweight ='bold')
     actor_codes = ['Governments and State Security Services',
@@ -79,11 +82,12 @@ def actor_type(acled_frame, country):
             actor_data2 = inter2_grps['inter2'].get_group(code + 1)
         plt.plot(actor_data1.resample('M').count() + actor_data2.resample('M').count(), '-', label = actor_codes[code], linewidth='4')
     plt.plot(acled_frame.data_id.resample('M').count(), '-', label = 'Total Num Events', linewidth='4')
-    leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+    plt.legend()
+    """leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
           fancybox=True, shadow=True, ncol=3)
     for line in leg.get_lines():
-        line.set_linewidth(8.0)
-        
+        line.set_linewidth(8.0)"""
+    plt.show()   
         
         
         
@@ -104,8 +108,8 @@ def get_cols_by_datelist(start, end, prefix, bucket_frame):
 
 
 def website_vs_bucket_fatalities(acled_frame, bucket_frame, country):
-    plt.figure(figsize=(20,20))
-    plt.rcParams.update({'font.size': 22})
+    #plt.figure(figsize=(6, 5))
+    plt.rcParams.update({'font.size': 12})
     plt.xticks(rotation=70)
     plt.title('Fatality Totals in {} both data set'.format(country), fontweight ='bold')
     plt.plot(acled_frame['fatalities'].resample('M').sum(), '-', label = 'acled_website', linewidth='4')
@@ -117,11 +121,12 @@ def website_vs_bucket_fatalities(acled_frame, bucket_frame, country):
         bfx.append(dates[i])
 
     plt.plot(bfx, bfy, '-', label = 'acled_bucket', linewidth='4')
-    leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+    plt.legend()
+    """leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
               fancybox=True, shadow=True, ncol=3)
     for line in leg.get_lines():
-        line.set_linewidth(8.0)
-        
+        line.set_linewidth(8.0)"""
+    plt.show()    
         
         
 def correlation_cols(bucket_frame, pre1, pre2, log=False):
@@ -167,10 +172,13 @@ def correlation_cols(bucket_frame, pre1, pre2, log=False):
     
     #ax = sns.regplot(norm_x[max_month], norm_y[max_month], label=pre2 + 'max_month')
     ax = sns.regplot(x, y, label=pre2)
-    ax.set(xlabel=pre1)
-    leg = plt.legend(loc='upper center', bbox_to_anchor=(1.4, 1),
-    fancybox=True, shadow=True, ncol=1)
-    
+    ax.set(title="Correlation between {} and {}".format(pre1, pre2), xlabel=pre1)
+    plt.legend()
+    """leg = plt.legend(loc='upper center', bbox_to_anchor=(1.4, 1),
+    fancybox=True, shadow=True, ncol=1)"""
+    plt.show()
+
+
 def IPC_pct_corr_plots(bucket_frame):
     pre2 = 'acled_fatalities'
     pre3 = 'RainAll'
@@ -182,7 +190,8 @@ def IPC_pct_corr_plots(bucket_frame):
         #correlation_cols(bucket_frame, pre1, pre3)
         correlation_cols(bucket_frame, pre1, pre4)
         #fig.savefig('plots/'+pre1+'-'+pre2+'-bestfit.png')
-        
+       
+    
         
 def score_freq(bucket_frame, country):
     phase_scores, m, d = get_cols_by_datelist('1/1/10', pd.datetime.today(), 'IPC_Phase', bucket_frame)
@@ -195,5 +204,6 @@ def score_freq(bucket_frame, country):
     scores.plot(ax=ax, kind='bar')
     ax.set(title='IPC Score freq. ' + country)
     print(scores)
+    plt.show()
 
 

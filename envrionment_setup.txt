@@ -1,0 +1,10 @@
+CONDITIONS:
+Once again, be in a python3 environment
+
+DIRECTORY STRUCTURE:
+Please download "afg_full_time" folder from the shared "CS325b supplementary material" google drive folder. The link to access this folder is:
+
+https://drive.google.com/drive/folders/1cOGmaMXekinLLKcqnjWRPCB0EQOM5S2P?usp=sharing
+
+Place this folder (afg_full_time) in the modis_data folder, such that the
+repo file tree looks like famine-intensity-prediction > modis_data > afg_full_time

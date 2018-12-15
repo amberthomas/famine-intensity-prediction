@@ -5,13 +5,19 @@ from datetime import date
 import numpy as np
 import gdal
 import datetime
-import itertools
 from math import isnan
 from scipy import stats
 import matplotlib.pyplot as plt
+import pydot
+import seaborn as sns
+from IPython.display import display
+
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
 
 import sklearn as sk
-import numpy as np 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import GradientBoostingClassifier
@@ -29,11 +35,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 from sklearn.metrics import explained_variance_score
 from sklearn.metrics import mean_absolute_error
-import matplotlib.pyplot as plt
-import pandas as pd
-import datetime
-import pydot
-import seaborn as sns
+
 
 """
 get_dates(filename)
@@ -135,8 +137,8 @@ prints RSME
 """
 def compare_frames(bframe, mframe, start, end, country, shift = None):
     #(acled_frame, bucket_frame, country):
-    plt.figure(figsize=(20,15))
-    plt.rcParams.update({'font.size': 22})
+    #plt.figure(figsize=(20,15))
+    #plt.rcParams.update({'font.size': 22})
     plt.xticks(rotation=70)
     plt.title('Compare MODIS and FAM NDVI readings for {}'.format(country), fontweight ='bold')
     ndvidf = format_df_graph(mframe, start, end, shift)
@@ -149,11 +151,13 @@ def compare_frames(bframe, mframe, start, end, country, shift = None):
         bfx.append(dates[i])
 
     plt.plot(bfx, bfy, '-', label = 'FAM NDVI', linewidth='4')
-    leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+    plt.legend()
+    """leg = plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
               fancybox=True, shadow=True, ncol=3)
     for line in leg.get_lines():
-        line.set_linewidth(8.0)
+        line.set_linewidth(8.0)"""
     print('{} RSME: '.format(country), (((ndvidf['fNDVI'].resample('M').mean() - bfy) ** 2).mean() ** .5))
+    plt.show();
     
     
     
@@ -359,7 +363,7 @@ def row_dropper(table):
     display(feature_table.iloc[0])"""
     return feature_table, label_table
 
-#basically not used, if you want to make a fake label for prev_ipc score so you can use 
+#basically NEVER used, if you want to make a fake label for prev_ipc score so you can use 
 # the first set of IPC scores in your dataset you can, but I never really opted to use it
 # because previous score is such an important feature and i didn't want to artificially 
 # influence it 
@@ -447,12 +451,6 @@ def label_feature_tables_split(bframe, mframe, num_test):
     ft, lt = row_dropper(feature_table)
     #print('table cols: \n{} \nfeat: \n{} \nlabels\n{}'.format(feature_table.columns.values, ft.columns.values, lt.columns.values))
     print('Post drop total rows: ', (ft.shape[0]))
-    """print('Post drop total rows: ', (feature_table.shape[0]))
-    print('Post drop total rows: ', (ft.shape[0]))
-    
-    print('Verification, first elem of first row of feature_table \n{}\nand last row of feature_table \n{}'.format(ft.iloc[0, 0], ft.iloc[-1, 0]))
-    print('First elem of first row of train features \n{}\nand last elem of train features \n{}'.format(train_feature.iloc[0, 0], train_feature.iloc[-1,0]))
-    print('First elem of first row of test feature \n{}\nand last elem of test features \n{}'.format(test_feature.iloc[0, 0], test_feature.iloc[-1, 0]))"""
     return train_label, train_feature, test_label, test_feature
 
 
@@ -465,7 +463,7 @@ def print_confusion_matrix(confusion_matrix, class_names, figsize = (10,7), font
     df_cm = pd.DataFrame(
         confusion_matrix, index=class_names, columns=class_names, 
     )
-    fig = plt.figure(figsize=figsize)
+    #fig = plt.figure(figsize=figsize)
     heatmap = sns.heatmap(df_cm, annot=True, fmt=fmt)
     """try:
         heatmap = sns.heatmap(df_cm, annot=True, fmt="d")
@@ -476,4 +474,433 @@ def print_confusion_matrix(confusion_matrix, class_names, figsize = (10,7), font
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.title('Confusion Matrix '+ title)
+    plt.show();
     return fig
+
+
+"""
+class_pre_re(class_label, cm)
+
+gives the prec and recall of the given label (IPC score) from a confusion matrix. 
+"""
+def class_pre_re(class_label, cm):
+
+    class_label = class_label - 1
+    #print('pre: ', cm[:, class_label])
+    #print('re: ', cm[class_label])
+    pre = cm[class_label][class_label]/(cm[:, class_label].sum())
+    re = cm[class_label][class_label]/(cm[class_label].sum())
+    return pre, re
+
+
+"""
+NOTE IMPORTANT: This is only used assuming that the features used are pre-pickled 
+Otherwise compy and paste code in between hashes 
+build_super_model_test_train_array(label_code, features_to_drop)
+
+label_code - 
+"""
+def build_super_model_test_train_array(label_code, features_to_drop = []):
+    afg_label_table, afg_feature_table = [None, None]
+    somalia_label_table, somalia_feature_table = [None, None]
+    niger_label_table, niger_feature_table = [None, None]
+    mali_label_table, mali_feature_table = [None, None]
+    southsudan_label_table, southsudan_feature_table = [None, None]
+    if label_code == 'BIN':
+        # binary data set 
+        print("LABEL TYPE: Binary")
+        afg_label_table = pd.read_pickle('modis_data/afg_bin_labels')
+        afg_feature_table = pd.read_pickle('modis_data/afg_bin_features')
+        somalia_label_table = pd.read_pickle('modis_data/somalia_bin_labels')
+        somalia_feature_table = pd.read_pickle('modis_data/somalia_bin_features')
+        niger_label_table = pd.read_pickle('modis_data/niger_bin_labels')
+        niger_feature_table = pd.read_pickle('modis_data/niger_bin_features')
+        mali_label_table = pd.read_pickle('modis_data/mali_bin_labels')
+        mali_feature_table = pd.read_pickle('modis_data/mali_bin_features')
+        southsudan_label_table = pd.read_pickle('modis_data/southsudan_bin_labels')
+        southsudan_feature_table = pd.read_pickle('modis_data/southsudan_bin_features')
+        
+    elif label_code == 'REG':
+        # regressor data set 
+        print("LABEL TYPE: Continuous / regressor")
+        afg_label_table = pd.read_pickle('modis_data/afg_reg_labels')
+        afg_feature_table = pd.read_pickle('modis_data/afg_reg_features')
+        somalia_label_table = pd.read_pickle('modis_data/somalia_reg_labels')
+        somalia_feature_table = pd.read_pickle('modis_data/somalia_reg_features')
+        niger_label_table = pd.read_pickle('modis_data/niger_reg_labels')
+        niger_feature_table = pd.read_pickle('modis_data/niger_reg_features')
+        mali_label_table = pd.read_pickle('modis_data/mali_reg_labels')
+        mali_feature_table = pd.read_pickle('modis_data/mali_reg_features')
+        southsudan_label_table = pd.read_pickle('modis_data/southsudan_reg_labels')
+        southsudan_feature_table = pd.read_pickle('modis_data/southsudan_reg_features')
+    else:
+        # multi class classification dataset 
+        if label_code != 'MULT':
+            print ("INCORRECT LABEL TYPE GIVEN: \nMulticlass labels chosen as defult")
+        else:
+            print("LABEL TYPE: Multiclass") 
+        afg_label_table = pd.read_pickle('modis_data/afg_mult_labels')
+        afg_feature_table = pd.read_pickle('modis_data/afg_mult_features')
+        somalia_label_table = pd.read_pickle('modis_data/somalia_mult_labels')
+        somalia_feature_table = pd.read_pickle('modis_data/somalia_mult_features')
+        niger_label_table = pd.read_pickle('modis_data/niger_mult_labels')
+        niger_feature_table = pd.read_pickle('modis_data/niger_mult_features')
+        mali_label_table = pd.read_pickle('modis_data/mali_mult_labels')
+        mali_feature_table = pd.read_pickle('modis_data/mali_mult_features')
+        southsudan_label_table = pd.read_pickle('modis_data/southsudan_mult_labels')
+        southsudan_feature_table = pd.read_pickle('modis_data/southsudan_mult_features')
+    #####If Not Pickled Copy and Paste This Below#####    
+    somalia_feature_table_d = somalia_feature_table.drop(features_to_drop, axis=1)
+    mali_feature_table_d = mali_feature_table.drop(features_to_drop, axis=1)
+    niger_feature_table_d = niger_feature_table.drop(features_to_drop, axis=1)
+    afg_feature_table_d = afg_feature_table.drop(features_to_drop, axis=1)
+    southsudan_feature_table_d = southsudan_feature_table.drop(features_to_drop, axis=1)
+
+    somalia_labels = np.array(somalia_label_table)
+    somalia_feature_list = list(somalia_feature_table_d.columns)
+    somalia_features = np.array(somalia_feature_table_d)
+    somalia_train_features, somalia_test_features, somalia_train_labels, somalia_test_labels = train_test_split(somalia_features, somalia_labels, test_size = 0.25, random_state = 42)
+
+    mali_labels = np.array(mali_label_table)
+    mali_feature_list = list(mali_feature_table_d.columns)
+    mali_features = np.array(mali_feature_table_d)
+    mali_train_features, mali_test_features, mali_train_labels, mali_test_labels = train_test_split(mali_features, mali_labels, test_size = 0.25, random_state = 42)
+
+    afg_labels = np.array(afg_label_table)
+    afg_feature_list = list(afg_feature_table_d.columns)
+    afg_features = np.array(afg_feature_table_d)
+    afg_train_features, afg_test_features, afg_train_labels, afg_test_labels = train_test_split(afg_features, afg_labels, test_size = 0.25, random_state = 42)
+
+    niger_labels = np.array(niger_label_table)
+    niger_feature_list = list(niger_feature_table_d.columns)
+    niger_features = np.array(niger_feature_table_d)
+    niger_train_features, niger_test_features, niger_train_labels, niger_test_labels = train_test_split(niger_features, niger_labels, test_size = 0.25, random_state = 42)
+
+    southsudan_labels = np.array(southsudan_label_table)
+    southsudan_feature_list = list(southsudan_feature_table_d.columns)
+    southsudan_features = np.array(southsudan_feature_table_d)
+    southsudan_train_features, southsudan_test_features, southsudan_train_labels, southsudan_test_labels = train_test_split(southsudan_features, southsudan_labels, test_size = 0.25, random_state = 42)
+
+    train_features = np.append(somalia_train_features, niger_train_features, axis=0)
+    train_features = np.append(train_features, mali_train_features, axis=0)
+    train_features = np.append(train_features, afg_train_features, axis=0)
+    train_features = np.append(train_features, southsudan_train_features, axis=0)                          
+
+    test_features = np.append(somalia_test_features, niger_test_features, axis=0)
+    test_features = np.append(test_features, mali_test_features,axis=0)
+    test_features = np.append(test_features, afg_test_features,axis=0)
+    test_features = np.append(test_features, southsudan_test_features,axis=0)
+
+    train_labels = np.append(somalia_train_labels, niger_train_labels, axis=0)
+    train_labels = np.append(train_labels, mali_train_labels, axis=0)
+    train_labels = np.append(train_labels, afg_train_labels, axis=0)
+    train_labels = np.append(train_labels, southsudan_train_labels, axis=0)
+
+    test_labels = np.append(somalia_test_labels, niger_test_labels, axis=0)
+    test_labels = np.append(test_labels, mali_test_labels, axis=0)
+    test_labels = np.append(test_labels, afg_test_labels, axis=0)
+    test_labels = np.append(test_labels, southsudan_test_labels, axis=0)
+
+    feature_list = somalia_feature_list
+    #####If Not Pickled Copy and Paste This Above##### 
+    
+    return train_features, train_labels, test_features, test_labels, feature_list
+
+
+#for regressor
+# Create linear regression object
+"""The coefficient R^2 is defined as (1 - u/v), where u is the 
+residual sum of squares ((y_true - y_pred) ** 2).sum() and v is the 
+total sum of squares ((y_true - y_true.mean()) ** 2).sum(). The best 
+possible score is 1.0 and it can be negative (because the model can be 
+arbitrarily worse)"""
+# baseline is a regression that uses the past percent to predict current percent
+def LinReg_baseline(train_features, train_labels, test_features, test_labels):
+    regr = LinearRegression()
+    trf =train_features[:, np.newaxis,train_features.shape[1]-1]
+    regr.fit(trf, train_labels)
+
+    # Make predictions using the testing set
+    y_pred = regr.predict(test_features[:, np.newaxis,train_features.shape[1]-1])
+    y_pred_train = regr.predict(trf)
+    #TRAIN EVAL
+    print('Coefficients: \n', regr.coef_)
+    
+    print("Train Mean squared error: %.4f"
+          % mean_squared_error(train_labels, y_pred_train))
+    # Explained variance score: 1 is perfect prediction
+    print('Train Variance score (r2): %.4f' % r2_score(train_labels, y_pred_train))
+    
+    #TEST EVAL
+    print("Test Mean squared error: %.4f"
+          % mean_squared_error(test_labels, y_pred))
+    
+    print("Test Abd squared error: %.4f"
+          % mean_absolute_error(test_labels, y_pred))
+    
+    # Explained variance score: 1 is perfect prediction
+    print('Test Variance score (r2): %.4f' % r2_score(test_labels, y_pred))
+    # Plot outputs
+
+    plt.scatter(test_features[:, np.newaxis,train_features.shape[1]-1], test_labels,  color='blue')
+    plt.plot(test_features[:, np.newaxis,train_features.shape[1]-1], y_pred, color='red', linewidth=3)
+
+    
+    plt.xticks(())
+    plt.yticks(())
+
+    plt.show()
+    
+    
+#Classifier Baseline 
+# The baseline predictions get the mode of the train set and predict that for the test
+def Mode_Baseline(train_labels, test_labels, classes):
+    baseline_preds = np.ones(test_labels.shape)
+    mode = stats.mode(train_labels)[0][0]
+    baseline_preds = (baseline_preds*mode).astype(int)
+    test_acc = accuracy_score(test_labels.astype(int), baseline_preds.astype(int))
+    test_f1 = f1_score(test_labels.astype(int), baseline_preds.astype(int), average='macro')
+    test_f1w = f1_score(test_labels.astype(int), baseline_preds.astype(int), average='weighted')
+
+    cm = confusion_matrix(test_labels.astype(int), baseline_preds.astype(int), labels=np.arange(classes[0], classes[1]))
+    print_confusion_matrix(cm, np.arange(classes[0], classes[1]), title = 'Mode Baseline', percentage = False)
+    baseline_preds = np.ones(train_labels.shape)
+    baseline_preds = (baseline_preds*mode).astype(int)
+    train_acc = accuracy_score(train_labels.astype(int), baseline_preds.astype(int))
+    train_f1 = f1_score(train_labels.astype(int), baseline_preds.astype(int), average='macro')
+    train_f1w = f1_score(train_labels.astype(int), baseline_preds.astype(int), average='weighted')
+
+    print('train baseline acc: ', train_acc)
+    print('test baseline acc: ', test_acc)
+    print('train baseline f1: ', train_f1)
+    print('test baseline f1: ', test_f1)
+    print('train baseline f1 weighted: ', train_f1w)
+    print('test baseline f1: weighted', test_f1w)
+    
+#Classifier Baseline Persistance
+# The baseline predictions use previous IPC score as prediciton for current IPC score
+# n can be used if you want to test over the last n years. if n = 0, then test over all years
+def pers_baseline_F1(bframe, binary, n=0):
+    phase_base = get_cols_by_datelist('1/1/2010', '3/22/2017', 'IPC_Phase', bframe)
+    num_scores = len(phase_base[2])
+    if n == 0: n = num_scores - 1
+    start = num_scores - n - 1
+    base_df = bframe[phase_base[0]]
+    if binary:
+        base_df = base_df.where(base_df > 2, 0)
+        base_df = base_df.where(base_df < 2, 1)
+    correct = 0
+    pred_pers = np.array([])
+    label_pers = np.array([])
+    for i in range(start, len(phase_base[0]) - 1):
+        pred_pers = np.append(pred_pers, base_df[phase_base[0][i]].values)
+        label_pers = np.append(label_pers, base_df[phase_base[0][i+1]].values)
+    print('persistance test acc: ', accuracy_score(label_pers.astype(int), pred_pers.astype(int)))
+    print('persistance test f1: ', f1_score(label_pers.astype(int), pred_pers.astype(int), average='macro'))
+    return label_pers.astype(int), pred_pers.astype(int)
+
+# wrapper function that calls the pers baseline for all countries. 
+def all_country_persistance_wrapper(afg_bframe, somalia_bframe, mali_bframe, niger_bframe, southsudan_bframe, classes, n = 0):
+    binary = True
+    if classes[0]:
+        binary = False
+    c1, b1 = pers_baseline_F1(afg_bframe, binary, n)
+    c2, b2 = pers_baseline_F1(somalia_bframe, binary, n)
+    c3, b3 = pers_baseline_F1(mali_bframe, binary, n)
+    c4, b4 = pers_baseline_F1(niger_bframe, binary, n)
+    c5, b5 = pers_baseline_F1(southsudan_bframe, binary, n)
+    c = np.append(np.append(np.append(np.append(c1,c2),c3),c4),c5)
+    b = np.append(np.append(np.append(np.append(b1,b2),b3),b4),b5)
+    cm = confusion_matrix(b, c, labels=np.arange(classes[0], classes[1]))
+    print_confusion_matrix(cm, np.arange(classes[0], classes[1]), title = 'Persistence Baseline', percentage = False)
+    print('Overall acc: ', accuracy_score(c, b))
+    print('Overall f1: ', f1_score(c, b, average='macro'))
+    print('Overall f1 w: ', f1_score(c, b, average='weighted'))
+    #good output below for quick copy and paste to spread sheet
+    print('{},{},{}'.format('accuracy','f1','f1_weighted'))
+    print('{},{},{}'.format(accuracy_score(c, b),f1_score(c, b, average='macro'),f1_score(c, b, average='weighted')))
+
+
+"""
+regressor_train_test(regressor, title = '')
+title - The name of the regressor, makes print statements and copying and 
+pasting into spread sheets cleaner
+regressor - Enter in the type of regressor, with its hyperparameters alread set
+
+Use: Fits and runs predictions, gets all the evaluation metrics 
+Currently it plots nonsense, scatter of labels vs preds and a line of labels v labels
+"""
+def regressor_train_test(regressor, train_features, train_labels, test_features, test_labels, title = ''):
+    # Train the model on training data
+    regressor.fit(train_features, train_labels)
+
+    # Use the forest's predict method on the test and train data
+    test_pred = regressor.predict(test_features)
+    train_pred = regressor.predict(train_features)
+    
+    #TRAIN EVAL
+    train_eval = [mean_squared_error(train_labels, train_pred),
+                  mean_absolute_error(train_labels, train_pred),
+                  r2_score(train_labels, train_pred),
+                  explained_variance_score(train_labels, train_pred)]
+    print("Train Mean squared error: %.4f" % train_eval[0])
+    # Explained variance score: 1 is perfect prediction
+    print('Train Absolute error: %.4f' % train_eval[1])
+    print('Train Variance score (r2): %.4f' % train_eval[2])
+    print('Train Explained Variance score (r2): %.4f' % train_eval[3])
+    
+    #TEST EVAL
+    test_eval = [mean_squared_error(test_labels, test_pred),
+                  mean_absolute_error(test_labels, test_pred),
+                  r2_score(test_labels, test_pred),
+                  explained_variance_score(test_labels, test_pred)]
+    print("Test Mean squared error: %.4f" % test_eval[0])
+    # Explained variance score: 1 is perfect prediction
+    print('Test Absolute error: %.4f' % test_eval[1])
+    print('Test Variance score (r2): %.4f' % test_eval[2])
+    print('Test Explained Variance score (r2): %.4f' % test_eval[3])
+    
+    
+    # Plot outputs
+    print('{},{},{},{},{}'.format(title+' Best', 'MSE','MAE', 'R2', 'Exp Var'))
+    print('{},{},{},{},{}'.format(title+' Train',train_eval[0],train_eval[1],train_eval[2],train_eval[3]))
+    print('{},{},{},{},{}'.format(title+' Test', test_eval[0],test_eval[1],test_eval[2],test_eval[3]))
+    plt.scatter(test_labels, test_pred,  color='blue')
+    plt.plot(test_labels, test_labels, color='red', linewidth=3)
+
+    plt.xticks(())
+    plt.yticks(())
+    plt.show();
+    
+
+"""
+classifier_train_test(classifier, title = '')
+title - The name of the classifier, makes print statements and copying and 
+pasting into spread sheets cleaner
+classifier - Enter in the type of classifier, with its hyperparameters alread set
+classes - the range number of classes (0, 2) for binary and (1, 6) for multiclass 
+
+Use: Fits and runs predictions, gets all the evaluation metrics, prints confusion matrix
+"""
+def classifier_train_test(classifier, train_features, train_labels, test_features, test_labels, classes, title = ''):
+    # Train the model on training data
+    classifier.fit(train_features, train_labels.astype(int));
+
+    # Use the forest's predict method on the test data
+    test_pred = classifier.predict(test_features)
+    # Calculate the absolute errors
+
+    cm = confusion_matrix(test_labels.astype(int), test_pred.astype(int), labels=np.arange(classes[0],classes[1]))
+    test_acc = accuracy_score(test_labels.astype(int), test_pred.astype(int))
+    test_f1 = f1_score(test_labels.astype(int), test_pred.astype(int), average='macro')
+    test_f1w = f1_score(test_labels.astype(int), test_pred.astype(int), average='weighted')
+
+    print_confusion_matrix(cm, np.arange(classes[0],classes[1]), title=title, percentage = False)
+    #print('test pr, re 4: ',class_pre_re(4, cm))
+    #print('test pr, re 5: ', class_pre_re(5, cm))
+    #print('test acc: ', test_acc)
+
+    # Use the forest's predict method on the train data
+    train_pred = classifier.predict(train_features)
+    # Calculate the absolute errors
+
+    #cm_train = confusion_matrix(train_labels.astype(int), train_pred_rf.astype(int), labels=np.arange(classes[0],classes[1]))
+    train_acc = accuracy_score(train_labels.astype(int), train_pred.astype(int))
+    train_f1 = f1_score(train_labels.astype(int), train_pred.astype(int), average='macro')
+    train_f1w = f1_score(train_labels.astype(int), train_pred.astype(int), average='weighted')
+    #print_confusion_matrix(cm_train, np.arange(classes[0],classes[1]))
+    print('')
+    #print('train pr, re 4: ',class_pre_re(4, cm))
+    #print('train pr, re 5: ', class_pre_re(5, cm))
+    print('train acc: ', train_acc)
+    print('train f1: ', train_f1)
+    print('train f1 weighted: ', train_f1w)
+    print('')
+    print('test acc: ', test_acc)
+    print('test f1: ', test_f1)
+    print('test f1: weighted', test_f1w)
+
+    print('{},{},{},{}'.format(title+' Best', 'F1','F1 Weighted', 'Accuracy'))
+    print('{},{},{},{}'.format(title+' Train',train_acc,train_f1,train_f1w))
+    print('{},{},{},{}'.format(title+' Test', test_acc,test_f1,test_f1w))
+    
+
+    
+"""
+hyperparam_search(parameter_candidates, scoring, classifier, print_full)
+
+parameter_candidates - a dictionary of the hyperparemeters that you want to test, 
+with the key being the hyperparameter and the value being and array of the values 
+to be tested in grid search 
+scoring - an ARRAY (must be iterable array even if only testing 1 scoring function) 
+the search will get the values that each combonation of parameters give based 
+on these scoring functions. 
+IMPORTANT: the first element in the array is the primary scoring that the 
+hyperparameter seach orders on. Therefore put the metric you are most interested in there.
+The "Best Model" will be based on this score. 
+classifier - the initialized classifier enter in an hyperparameters that you are not testing
+(like random seed) prior to inputting in function
+print_full - None prints full table, any other value restricts the number of rows to 
+that given value.
+
+Use: runs cross validation hyper parameter tuning grid search 
+"""  
+def hyperparam_search(train_features, train_labels, test_features, test_labels, parameter_candidates, scoring, classifier, rows_disp = None):
+    print('parameter_candidates: ',parameter_candidates)
+    print('scoring: ', scoring)
+
+    gs = GridSearchCV(estimator=classifier, param_grid=parameter_candidates, n_jobs=-1, scoring=scoring, refit=scoring[0] )
+    gs.fit(train_features, train_labels.astype(int)) 
+    results = pd.DataFrame(gs.cv_results_ )
+    print('Best {} score for Train:'.format(scoring[0]), gs.best_score_) 
+    for pc in gs.best_params_:
+        print('Best {} for Train:'.format(pc), gs.best_params_[pc])
+
+    metrics = ['rank_test_' + s for s in scoring] 
+    metrics.extend(['mean_test_'+ s for s in scoring])
+    for pc in parameter_candidates:
+        metrics.extend(['param_' + p for p in list(pc.keys())])
+    metrics.append('params')
+    # Streamlined table to easily compare performances accross different metrics
+    with pd.option_context('display.max_rows', rows_disp, 'display.max_columns', None):
+        display(results[metrics].sort_values(by=['rank_test_' + scoring[0]]).drop('params', axis=1))
+  
+        
+    return results
+
+
+"""
+get_RF_variable_importance(rf, feature_list, title)
+
+rf - the random forest that you want to perform feature analysis on, 
+can be classifier or regressor
+feature_list - list of feature names, should be returned by 
+build_super_model_test_train_array() if used, otherwise must be taken from column names
+output by label_season_feature_tables() feature table.
+
+Use: get the variable importance (or average order of tree splits) from random forest
+"""  
+def get_RF_variable_importance(rf, feature_list, title = ''):
+    # Get numerical feature importances
+    importances = list(rf.feature_importances_)
+    # List of tuples with variable and importance
+    feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
+    # Sort the feature importances by most important first
+    feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
+    # Print out the feature and importances 
+    [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances];
+
+
+    # Set the style
+    plt.style.use('fivethirtyeight')
+    # list of x locations for plotting
+    #plt.figure(figsize=(20,10))
+    #plt.rcParams.update({'font.size': 22})
+    x_values = list(range(len(importances)))
+    # Make a bar chart
+    plt.bar(x_values, importances, orientation = 'vertical')
+    # Tick labels for x axis
+    plt.xticks(x_values, feature_list, rotation='vertical')
+    # Axis labels and title
+    plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances '+title);
+    plt.show();

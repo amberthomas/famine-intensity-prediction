@@ -1,0 +1,8 @@
+To run the code first run amber_setup.sh, install Jaspreet's dependancies
+and then just run main.sh
+
+The script should prompt you for input as required. 
+
+I also encourage you to look at either the provided jupyter notebooks or 
+the provided pdf outputs of the note books, incase the figures fail to 
+display properly.

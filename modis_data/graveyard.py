@@ -176,3 +176,22 @@ def format_hist_feature(features):
         feat_arr[f]= np.append(row['hist'], np.array(row['prev_score']))
     return feat_arr
 print(format_hist_feature(train_feature).shape)
+
+
+#This was supposed to add cross val hyperparam tests in an automated way to a dataframe
+# to better allow tracking and organization of testing. It ended up being more
+# distracting than anything.
+def add_to_hp_table(parameter_candidates,model, hp_total_df, num):
+    pc_combo = {}
+    hp_tested = set([])
+    for pct in parameter_candidates:
+        pc_combo = {**pc_combo, **pct}
+    hp_tested = list(pc_combo.keys())
+    hp_model_df= pd.DataFrame(np.array(list(pc_combo.keys())), columns=['Parameters'])
+    hp_model_df['Tested Values'] = pc_combo.values()
+    hp_model_df['Model'] = model
+    hp_model_df['Test Num'] = num
+    hp_model_df.set_index(['Model', 'Parameters', 'Test Num'], inplace=True)
+    hp_total_df = pd.concat([hp_model_df, hp_total_df])
+    display(hp_total_df)
+    return hp_total_df

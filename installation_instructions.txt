@@ -1,0 +1,15 @@
+PYTHON VERSION:
+I worked almost entirely in python 3.7 and I am fairly certain that 3.5
+will work just fine. 
+
+INSTALLATION:
+I first recommend running the amber_setup.sh script, which should pip 
+install all the required packages (hopefully).
+
+SPECIAL INSTRUCTIONS:
+The only difficulties with installing were google
+earth engine (though following the GEE instruction sheet worked fine 
+for me) and GDAL. I had to install gdal with homebrew. Additionally
+I had some issues with the google API certs (security) packages until I 
+upgraded to 3.7 (if I recall correctly it was the urlib or urlib2 library
+causing issues). 

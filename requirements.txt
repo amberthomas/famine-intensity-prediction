@@ -1,0 +1,2 @@
+I believe that all requirements to run are covered by the amber setup.txt for the modis model. 
+Jaspreet, I believe has her own set of requirements, such as pomegranate.
